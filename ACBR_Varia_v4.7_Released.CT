@@ -1,0 +1,2238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="26">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1449</ID>
+      <Description>"AC Brotherhood - Deluxe Edition v1.03 - Octobre 2017 (Uplay &amp; Steam)"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <LastState/>
+      <Color>000080</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : ACBSP.exe
+  Version: 
+  Date   : 2020-04-30
+  Author : Paul44
+
+  BhvAssassin
+}
+
+[ENABLE]
+// structname: +10 .. +8
+// +8: Entity ..+5C: World ..+688:NotoritieManager
+// +8: Entity ..+5C: World ..+20 .. +80:NotoritieManager
+// +8: Entity ..+5C: World ..+20 .. +74 .. +15C:NotoritieManager
+// +10: CharacterAI ..+C: StatechartDesc
+//                  ..+20: CharacterAI
+//                  ..+58 .. +0: PlayerDataItem
+//                  ..+58 .. +C: InventoryDataItem .. +10 .. +0~xx: (resp items): InventoryRechargeableContainer
+//                                                            0~ money
+// +10 +58 +8: SharedDataItem
+// +78 +30 +40: CSrvPlayerHealth
+// +78 +30 +14: C+78CLPlayerDeath ~ CLNPCDeath
+// +78 +30 +28: CSrvGroupMember
+// +10 .. +4C .. +18 .. +178 (StatechartState) .. +1C: CSrvPlayerHealth
+// +14: PhysicWorkspace
+// +18: Human
+// +24: EventListener
+// +28: BhvAssassin
+// +68: CharacterAI
+// +78: CharacterAI
+
+aobscanmodule(BhvAssassin,$process,8B 01 23 C2 0F 84 65 02 00 00)
+registersymbol(BhvAssassin)
+alloc(newmem,$100,$process)
+
+globalalloc(pBhvAssassin,4,$process)
+globalalloc(pEntity,4,$process)
+globalalloc(pHealth,4,$process)
+globalalloc(pInventory,4,$process)
+globalalloc(pSharedData,4,$process)
+globalalloc(pNotoriety,4,$process)
+globalalloc(bGodmode,1,$process)
+globalalloc(bInvisible,1,$process)
+
+bGodmode:
+db 0
+
+bInvisible:
+db 0
+
+
+globalalloc(nCrash1,4,$process)
+globalalloc(nCrash2,4,$process)
+globalalloc(nCrash3,4,$process)
+
+nCrash1:
+dd (int)0
+
+nCrash2:
+dd (int)0
+
+nCrash3:
+dd (int)0
+
+
+// 'Player Coordinates' script
+// x64 pointers are 8-bytes long
+globalalloc(pStructCrdBase,4,$process)
+globalalloc(pStructCrdOffset,4,$process)
+
+// ptrs for Tools...
+globalalloc(pCheckTools,4,$process)
+globalalloc(pCheckIcons,4,$process)
+globalalloc(pCheckViewP,4,$process)
+
+pCheckIcons:
+dd 0x0
+
+pCheckViewP:
+dd 0x0
+
+
+label(code)
+label(code2)
+label(return)
+
+newmem:
+{$try}
+  mov eax,[ecx]
+  and eax,edx
+  je $process+C26718
+code:
+  push ebx
+  mov [pBhvAssassin],eax
+  // dis-enable invisible...
+  mov bl,[bInvisible]
+  mov byte ptr [eax+1C],bl
+  // get entity...
+  mov ebx,[eax+8]
+  mov [pEntity],ebx
+  // get notoriety...
+  mov ebx,[eax+8]
+  mov ebx,[ebx+5C]                          // World
+  mov ebx,[ebx+688]
+  mov [pNotoriety],ebx
+  // get health...
+  mov ebx,[eax+78]
+  mov ebx,[ebx+30]
+  mov ebx,[ebx+40]
+  mov [pHealth],ebx
+  // get inventory...
+  mov ebx,[eax+10]
+  mov ebx,[ebx+58]
+  mov ebx,[ebx+C]
+  mov ebx,[ebx+10]
+  mov [pInventory],ebx
+  // get sharedData...
+  mov ebx,[eax+10]
+  mov ebx,[ebx+58]
+  mov ebx,[ebx+8]
+  mov [pSharedData],ebx
+  // dis-enable godmode...
+  mov byte ptr [ebx+18],0x80
+  cmp [bGodmode],1
+  jne code2
+  mov byte ptr [ebx+18],0x81
+  jmp code2
+{$except}
+  inc [nCrash1]
+code2:
+  pop ebx
+  jmp return
+
+BhvAssassin:
+  jmp newmem
+  db 90 90 90 90 90
+return:
+
+
+[DISABLE]
+
+BhvAssassin:
+  db 8B 01 23 C2 0F 84 65 02 00 00
+
+unregistersymbol(BhvAssassin)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP.exe"+C264A9
+
+"ACBSP.exe"+C2648D: 8B 41 08              -  mov eax,[ecx+08]
+"ACBSP.exe"+C26490: C1 F8 1F              -  sar eax,1F
+"ACBSP.exe"+C26493: 85 01                 -  test [ecx],eax
+"ACBSP.exe"+C26495: 75 07                 -  jne ACBSP.exe+C2649E
+"ACBSP.exe"+C26497: 8B CE                 -  mov ecx,esi
+"ACBSP.exe"+C26499: E8 12 F1 FF FF        -  call ACBSP.exe+C255B0
+"ACBSP.exe"+C2649E: 8B 4E 18              -  mov ecx,[esi+18]
+"ACBSP.exe"+C264A1: 8B 41 08              -  mov eax,[ecx+08]
+"ACBSP.exe"+C264A4: C1 F8 1F              -  sar eax,1F
+"ACBSP.exe"+C264A7: 8B D0                 -  mov edx,eax
+// ---------- INJECTING HERE ----------
+"ACBSP.exe"+C264A9: 8B 01                 -  mov eax,[ecx]
+"ACBSP.exe"+C264AB: 23 C2                 -  and eax,edx
+"ACBSP.exe"+C264AD: 0F 84 65 02 00 00     -  je ACBSP.exe+C26718
+// ---------- DONE INJECTING  ----------
+"ACBSP.exe"+C264B3: 0F B6 88 94 08 00 00  -  movzx ecx,byte ptr [eax+00000894]
+"ACBSP.exe"+C264BA: 8A 90 95 08 00 00     -  mov dl,[eax+00000895]
+"ACBSP.exe"+C264C0: 88 4D D4              -  mov [ebp-2C],cl
+"ACBSP.exe"+C264C3: 0F B6 88 96 08 00 00  -  movzx ecx,byte ptr [eax+00000896]
+"ACBSP.exe"+C264CA: 88 55 D5              -  mov [ebp-2B],dl
+"ACBSP.exe"+C264CD: 8B 90 98 08 00 00     -  mov edx,[eax+00000898]
+"ACBSP.exe"+C264D3: 88 4D D6              -  mov [ebp-2A],cl
+"ACBSP.exe"+C264D6: 8B 88 9C 08 00 00     -  mov ecx,[eax+0000089C]
+"ACBSP.exe"+C264DC: 89 55 D8              -  mov [ebp-28],edx
+"ACBSP.exe"+C264DF: 8B 90 A0 08 00 00     -  mov edx,[eax+000008A0]
+}
+
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>1383</ID>
+          <Description>"(it can take a few seconds to collect the values...)"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <Color>FF0000</Color>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1382</ID>
+          <Description>"(FastTravel &amp; Cutscenes cause values to 'reload'... !)"</Description>
+          <LastState Value="" RealAddress="00000000"/>
+          <Color>FF0080</Color>
+          <GroupHeader>1</GroupHeader>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>237</ID>
+          <Description>"Player Status"</Description>
+          <Options moHideChildren="1" moManualExpandCollapse="1" moDeactivateChildrenAsWell="1"/>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-21
+  Author : Paul44
+
+  Manage player status, such as health, invisibility, godmode, etc...
+
+}
+
+[ENABLE]
+
+
+
+[DISABLE]
+
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>238</ID>
+              <Description>"Health"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pHealth</Address>
+              <Offsets>
+                <Offset>58</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1469</ID>
+              <Description>"Max Health"</Description>
+              <Color>808080</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pHealth</Address>
+              <Offsets>
+                <Offset>5C</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1468</ID>
+              <Description>"Calculated Health"</Description>
+              <Color>808080</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pHealth</Address>
+              <Offsets>
+                <Offset>C0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1467</ID>
+              <Description>"Armor Damage"</Description>
+              <Color>808080</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pHealth</Address>
+              <Offsets>
+                <Offset>60</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>2210</ID>
+              <Description>"Desync (= 1)"</Description>
+              <Color>808080</Color>
+              <VariableType>Byte</VariableType>
+              <Address>[pHealth]+BC</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>297</ID>
+              <Description>"God Mode"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-04-30
+  Author : Paul44
+
+  Author : Paul44
+
+  Dis/enable God Mode
+}
+
+[ENABLE]
+
+{$lua}
+    local addrHealth = getAddress("[pSharedData]")
+    --print(string.format("%x",addrHealth+0x18))
+    writeBytes(addrHealth+0x18,0x81)
+
+{$asm}
+bGodmode:
+db 1
+
+[DISABLE]
+{$lua}
+    local addrHealth = getAddress("[pSharedData]")
+    writeBytes(addrHealth+0x18,0x80)
+
+{$asm}
+bGodmode:
+db 0
+</AssemblerScript>
+              <Hotkeys>
+                <Hotkey>
+                  <Action>Toggle Activation</Action>
+                  <Keys>
+                    <Key>17</Key>
+                    <Key>71</Key>
+                  </Keys>
+                  <ID>0</ID>
+                  <ActivateSound TTS="EN">Activated</ActivateSound>
+                  <DeactivateSound TTS="EN">Deactivated</DeactivateSound>
+                </Hotkey>
+              </Hotkeys>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>718</ID>
+                  <Description>"God Mode (= x81)"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>808080</Color>
+                  <VariableType>Byte</VariableType>
+                  <Address>[pSharedData]+18</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>311</ID>
+                  <Description>"Current Health"</Description>
+                  <Color>808080</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>[pSharedData]+08</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>719</ID>
+                  <Description>"Maximum Health"</Description>
+                  <Color>808080</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>[pSharedData]+10</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>306</ID>
+                  <Description>"SharedData - Base"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pSharedData</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>312</ID>
+              <Description>"Invisible"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-04-30
+  Author : Paul44
+
+  Dis/enable Invisibility
+}
+
+[ENABLE]
+
+{$lua}
+    local addrInvisib = getAddress("[pBhvAssassin]")
+    writeBytes(addrInvisib+0x1C,1)
+
+{$asm}
+bInvisible:
+db 1
+
+[DISABLE]
+{$lua}
+    local addrInvisib = getAddress("[pBhvAssassin]")
+    writeBytes(addrInvisib+0x1C,0)
+
+{$asm}
+bInvisible:
+db 0
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>313</ID>
+                  <Description>"Invisible (= 1)"</Description>
+                  <Color>808080</Color>
+                  <VariableType>Byte</VariableType>
+                  <Address>[pBhvAssassin]+1C</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>2137</ID>
+                  <Description>"Tab/Esc status (correct = 1)"</Description>
+                  <Color>808080</Color>
+                  <VariableType>Byte</VariableType>
+                  <Address>[pBhvAssassin]+4C</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>314</ID>
+                  <Description>"BhvAssassin - Base"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pBhvAssassin</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>2138</ID>
+              <Description>"Notoriety"</Description>
+              <Options moHideChildren="1"/>
+              <VariableType>Float</VariableType>
+              <Address>[pNotoriety]+0C</Address>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>241</ID>
+                  <Description>"NotorietyManager -  Base"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pNotoriety</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>2211</ID>
+              <Description>"CSrvPlayerHealth -  Base"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <Color>C0C0C0</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pHealth</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>739</ID>
+          <Description>"Inventory Supplies"</Description>
+          <Options moHideChildren="1" moManualExpandCollapse="1"/>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-21
+  Author : Paul44
+
+  Manage Inventory Supply values...
+  (note: when replaying certain DNA missions, these 'record values' could reset...)
+
+  Item type:
+  * 01 = Money
+  * 05 = Smoke Bombs
+  * 07 = Medicine
+  * 08 = Knifes (special case ~ 1 byte value in hexdecimal)
+    (research based on other table ~ and (word ptr) eax,3FFF)
+  * 10 = Bullets
+  * 0A = Pistol
+  * 0B = Poison darts
+  * 14 = Arrows
+  * 17 = Parachute
+}
+
+[ENABLE]
+
+[DISABLE]
+
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>751</ID>
+              <Description>"Money"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>C</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>752</ID>
+              <Description>"Medicine"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>0C</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>754</ID>
+              <Description>"Smoke Bombs"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>4</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>755</ID>
+              <Description>"Pistol Bullets"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>14</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>756</ID>
+              <Description>"Poison Darts"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>10</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>757</ID>
+              <Description>"Crossbow Arrows"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>44</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>2143</ID>
+              <Description>"Knifes (25 max !)"</Description>
+              <VariableType>Byte</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>1A</Offset>
+                <Offset>20</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>758</ID>
+              <Description>"Parachutes"</Description>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+              <Offsets>
+                <Offset>0C</Offset>
+                <Offset>4C</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>750</ID>
+              <Description>"LogicalInventory - Base"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <Color>C0C0C0</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pInventory</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>332</ID>
+          <Description>"Teleport &amp; Coordinates..."</Description>
+          <Options moHideChildren="1" moManualExpandCollapse="1" moDeactivateChildrenAsWell="1"/>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-27
+  Author : Paul44
+
+  Collects player's location specific info...
+
+  Sidenote: entities can be identified from +C8 byte-value:
+  - 11001101: player Ezio   (~ Steam: 11100211)
+
+  - 06000601: blue beret soldier w/ sword (near camp)
+  - 08000801: helmet soldier w/ lance (near camp)
+  - 04000401: brute soldier (near camp)
+  - 05000501: archer soldier
+
+  - 07000701: mercenaries
+  - 09000901: mercenaries
+  - 0A000A01: man with lantern
+  - 0A000A01: thief
+  - 0B000B01: thief
+
+  - 020002FF
+  - 02FF02FF: specific locations/icons on map ? (here: assassin tower)
+}
+
+[ENABLE]
+
+aobscanmodule(pCoord,$process,51 0F 29 40 30)
+registersymbol(pCoord)
+alloc(newmem,$100,$process)
+
+globalalloc(pFreeRoam,4,"$process")
+
+// Free cam routine...
+// ID of freecam script in CE table...
+globalalloc(AddrListID,4,"$process")
+AddrListID:
+dd (int)1479
+
+// save current location x,y,z coordinates...
+globalalloc(OrigCoord,12,"$process")
+// init script variables
+globalalloc(XYstepVal,4,"$process")
+globalalloc(ZstepVal,4,"$process")
+globalalloc(ZstepdropHeight,4,"$process")
+// PlayerMapIcon...
+globalalloc(pMapWayp,4,$process)
+globalalloc(nDropHeight,4,$process)
+
+// set high enough because of 'watersurface reference'...
+nDropHeight:
+dd (float)40.0
+
+
+XYstepVal:
+dd (float)1.0
+ZstepVal:
+dd (float)3.0
+ZstepdropHeight:
+dd (float)0.1
+
+
+
+globalalloc(Xval,4,"$process")
+globalalloc(Yval,4,"$process")
+globalalloc(Zval,4,"$process")
+globalalloc(bInit,1,"$process")
+globalalloc(bInit2,1,"$process")
+globalalloc(bFreeCam,1,"$process")
+
+bInit:
+db 00
+
+bInit2:
+db 00
+
+bFreeCam:
+db 00
+
+// fill in offset here ~ see table coordinates...
+pStructCrdOffset:
+dd 40
+
+label(code)
+label(return)
+
+// subroutines...
+alloc(storeOrig,$100,$process)
+alloc(updateCrd,$100,$process)
+
+storeOrig:
+  // store original coordinates...
+  push eax
+  mov ebx,[pStructCrdBase]
+  add ebx,[pStructCrdOffset]
+  lea ecx,[OrigCoord]
+  mov edx,[ebx]
+  mov [ecx],edx
+  lea eax,[Xval]
+  mov [eax],edx
+  add ebx,4
+  add ecx,4
+  mov edx,[ebx]
+  mov [ecx],edx
+  lea eax,[Yval]
+  mov [eax],edx
+  add ebx,4
+  add ecx,4
+  mov edx,[ebx]
+  mov [ecx],edx
+  lea eax,[Zval]
+  mov [eax],edx
+  pop eax
+  ret
+
+updateCrd:
+  // updated coordinates...
+  mov ebx,[pStructCrdBase]
+  add ebx,[pStructCrdOffset]
+  mov edx,[XVal]
+  mov [ebx],edx
+  add ebx,4
+  mov edx,[YVal]
+  mov [ebx],edx
+  add ebx,4
+  mov edx,[ZVal]
+  mov [ebx],edx
+  ret
+
+newmem:
+{$try}
+  push ebx
+  mov ebx,eax
+  sub ebx,0x10
+  cmp ebx,[pEntity]
+  pop ebx
+  jne code
+  // freecam routines... x32: 4-byte ptrs &amp; e?x registers...
+  cmp byte ptr [bFreeCam],1
+  jne code
+  push ebx
+  push ecx
+  push edx
+  mov ebx,[pEntity]
+  mov [pStructCrdBase],ebx
+  // original coordinates...
+  cmp [bInit],1
+  jg init
+  call storeOrig
+  inc [bInit]
+init:
+  // updated coordinates...
+  call updateCrd
+  mov ebx,[pStructCrdBase]
+  movaps xmm0,[ebx+40]
+  // restore original registers...
+  pop edx
+  pop ecx
+  pop ebx
+  jmp code
+{$except}
+  inc [nCrash2]
+code:
+  push ecx
+  movaps [eax+30],xmm0
+  jmp return
+
+pCoord:
+  jmp newmem
+return:
+
+
+[DISABLE]
+
+pCoord:
+  db 51 0F 29 40 30
+
+unregistersymbol(pCoord)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP.exe"+185C28
+
+"ACBSP.exe"+185C09: 0F 28 02              -  movaps xmm0,[edx]
+"ACBSP.exe"+185C0C: 8D 41 10              -  lea eax,[ecx+10]
+"ACBSP.exe"+185C0F: 0F 29 00              -  movaps [eax],xmm0
+"ACBSP.exe"+185C12: 0F 28 42 10           -  movaps xmm0,[edx+10]
+"ACBSP.exe"+185C16: 0F 29 40 10           -  movaps [eax+10],xmm0
+"ACBSP.exe"+185C1A: 0F 28 42 20           -  movaps xmm0,[edx+20]
+"ACBSP.exe"+185C1E: 50                    -  push eax
+"ACBSP.exe"+185C1F: 0F 29 40 20           -  movaps [eax+20],xmm0
+"ACBSP.exe"+185C23: 0F 28 42 30           -  movaps xmm0,[edx+30]
+"ACBSP.exe"+185C27: 51                    -  push ecx
+// ---------- INJECTING HERE ----------
+"ACBSP.exe"+185C28: 0F 29 40 30           -  movaps [eax+30],xmm0
+"ACBSP.exe"+185C2C: E8 5F 29 F8 FF        -  call ACBSP.exe+108590
+// ---------- DONE INJECTING  ----------
+"ACBSP.exe"+185C31: 83 C4 08              -  add esp,08
+"ACBSP.exe"+185C34: 8B E5                 -  mov esp,ebp
+"ACBSP.exe"+185C36: 5D                    -  pop ebp
+"ACBSP.exe"+185C37: 8B E3                 -  mov esp,ebx
+"ACBSP.exe"+185C39: 5B                    -  pop ebx
+"ACBSP.exe"+185C3A: C2 08 00              -  ret 0008
+"ACBSP.exe"+185C3D: CC                    -  int 3
+"ACBSP.exe"+185C3E: CC                    -  int 3
+"ACBSP.exe"+185C3F: CC                    -  int 3
+"ACBSP.exe"+185C40: 55                    -  push ebp
+}
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>335</ID>
+              <Description>"X-axis"</Description>
+              <Color>808080</Color>
+              <VariableType>Float</VariableType>
+              <Address>[pEntity]+40</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>336</ID>
+              <Description>"Y-axis"</Description>
+              <Color>808080</Color>
+              <VariableType>Float</VariableType>
+              <Address>[pEntity]+44</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>337</ID>
+              <Description>"Z-axis (Height)"</Description>
+              <Color>808080</Color>
+              <VariableType>Float</VariableType>
+              <Address>[pEntity]+48</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>51</ID>
+              <Description>"Map Waypoint"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-27
+  Author : Paul44
+
+  Collects current map waypoint xy coordinates shown on map...
+}
+
+[ENABLE]
+// Menumanager... ptr to MapIcon... +3C
+// aobscanmodule(INJECT,ACBSP_Win.exe,B0 01 89 4D FC) // should be unique
+{$lua}
+getStaticAddr("B0 01 89 4D FC",4,"pMapWayp")
+
+{$asm}
+
+[DISABLE]
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP_Win.exe"+83BED2
+
+"ACBSP_Win.exe"+83BEBF: CC                    -  int 3
+"ACBSP_Win.exe"+83BEC0: 55                    -  push ebp
+"ACBSP_Win.exe"+83BEC1: 8B EC                 -  mov ebp,esp
+"ACBSP_Win.exe"+83BEC3: 51                    -  push ecx
+"ACBSP_Win.exe"+83BEC4: 53                    -  push ebx
+"ACBSP_Win.exe"+83BEC5: 8B 5D 08              -  mov ebx,[ebp+08]
+"ACBSP_Win.exe"+83BEC8: 56                    -  push esi
+"ACBSP_Win.exe"+83BEC9: 57                    -  push edi
+"ACBSP_Win.exe"+83BECA: 8B F9                 -  mov edi,ecx
+"ACBSP_Win.exe"+83BECC: 8B 0D 00 3E F0 02     -  mov ecx,[ACBSP_Win.exe+2623E00]
+// ---------- INJECTING HERE ----------
+"ACBSP_Win.exe"+83BED2: B0 01                 -  mov al,01
+"ACBSP_Win.exe"+83BED4: 89 4D FC              -  mov [ebp-04],ecx
+// ---------- DONE INJECTING  ----------
+"ACBSP_Win.exe"+83BED7: 85 C9                 -  test ecx,ecx
+"ACBSP_Win.exe"+83BED9: 74 10                 -  je ACBSP_Win.exe+83BEEB
+"ACBSP_Win.exe"+83BEDB: 8B 49 3C              -  mov ecx,[ecx+3C]
+"ACBSP_Win.exe"+83BEDE: 85 C9                 -  test ecx,ecx
+"ACBSP_Win.exe"+83BEE0: 74 09                 -  je ACBSP_Win.exe+83BEEB
+"ACBSP_Win.exe"+83BEE2: 8B 03                 -  mov eax,[ebx]
+"ACBSP_Win.exe"+83BEE4: 8B 10                 -  mov edx,[eax]
+"ACBSP_Win.exe"+83BEE6: 51                    -  push ecx
+"ACBSP_Win.exe"+83BEE7: 8B CB                 -  mov ecx,ebx
+"ACBSP_Win.exe"+83BEE9: FF D2                 -  call edx
+}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>231</ID>
+                  <Description>"(Help ~ Enable 'God mode' first before teleporting...)"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState/>
+                  <Color>008000</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-27
+  Author : Paul44
+
+  HowTo: Teleporting...
+}
+
+[ENABLE]
+{$lua}
+  local sMessage = [[
+ 1.  Open map and select an icon (such as chest, fragment, etc)
+ 2.  Press [Shift+T] while still in the map view...!
+ 3.  Press [ESC] to teleport to that particular location
+      (see also [Readme] file)
+  ]]
+
+  showMessage(sMessage)
+
+{$asm}
+// disables script automatically by CE...
+test al,al
+
+[DISABLE]
+
+</AssemblerScript>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>232</ID>
+                      <Description>"World ~ Base Address"</Description>
+                      <ShowAsHex>1</ShowAsHex>
+                      <VariableType>4 Bytes</VariableType>
+                      <Address>pWorld</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>267</ID>
+                  <Description>"Teleport to Waypoint..."</Description>
+                  <LastState/>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-27
+  Author : Paul44
+
+  Teleports player to Map Waypoint Marker...
+  (enable 'God Mode' first to prevent you from dying)
+
+  note: I'm not using the Z-value from Icon coordinates since 9/10
+        you'll wind up inside some structure...
+}
+
+[ENABLE]
+
+{$lua}
+local addrEntity = getAddress("[pEntity]")
+local addrCrdOffset = getAddress("pStructCrdOffset")
+local CrdOffset = readInteger(addrCrdOffset)
+addrEntity = addrEntity + CrdOffset
+
+local coordX = readFloat(addrEntity)
+local coordY = readFloat(addrEntity+0x4)
+local coordZ = readFloat(addrEntity+0x8)
+-- if error, restore original coordinates...
+if not pcall(SetCoord) then
+    local addrC3 = getAddress("nCrash3")
+    local nCount = readInteger(addrC3)
+    nCount = nCount + 1
+    writeInteger(addrC3, nCount)
+    writeFloat(addrEntity,coordX)
+    writeFloat(addrEntity+0x4,coordY)
+    writeFloat(addrEntity+0x8,coordZ)
+end
+
+
+function SetCoord()
+    local IconHeight = 5.0
+    -- Map waypoint (non-icon location) does not have a Z-value, so we use a fixed Z-value...
+    local addrMap = getAddress("[pMapWayp]")
+    addrMap = addrMap + 0x3C
+    addrMap = readInteger(addrMap)
+    --print(string.format("[%x]",addrMap))
+    local addrHeight = getAddress("nDropHeight")
+    local MapX = readFloat(addrMap+0x08)
+    local MapY = readFloat(addrMap+0x0C)
+    local MapZ = readFloat(addrHeight)
+    local IconZ = readFloat(addrMap+0x10)
+    -- with waypoint marker, this address points to unicode string 'Player_Marker'
+    -- (2 other non-english languages give same english descriptive)
+    -- we've taken the 1st 4 bytes, read as integer and evaluate this value...
+    local MapIcon = readInteger(addrMap+0x00)
+    MapIcon = readInteger(MapIcon+0x6C,4)
+    -- +0x6C ~= 4980816 ~= 0x004C0050 ~= PLAYER_MA (Unicode)
+    -- print(string.format("[%x]",IconZ))
+    local bMapUpdate = true
+    if MapX ~= MapX or MapY ~= MapY then bMapUpdate = false end
+    if MapX == nil or MapY == nil or (MapX == 0 and MapY == 0) then
+        bMapUpdate = false
+    elseif MapIcon ~= 4980816 then
+        bMapUpdate = false
+    elseif math.floor(MapX) == -1 or math.floor(MapY) == -1 then
+        bMapUpdate = false
+    end
+    if bMapUpdate then
+        if IconZ ~= 0 then
+            MapZ = math.max(IconZ+IconHeight,MapZ)
+        end
+        writeFloat(addrEntity+0x8,MapZ)
+        writeFloat(addrEntity,MapX)
+        writeFloat(addrEntity+0x4,MapY)
+
+    end
+end
+
+{$asm}
+// disables script automatically by CE...
+test al,al
+
+[DISABLE]
+
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>16</Key>
+                        <Key>84</Key>
+                      </Keys>
+                      <ID>1</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>357</ID>
+                      <Description>"Drop Height"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>nDropHeight</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>52</ID>
+                      <Description>"Waypoint X"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>pMapWayp</Address>
+                      <Offsets>
+                        <Offset>8</Offset>
+                        <Offset>3C</Offset>
+                      </Offsets>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>53</ID>
+                      <Description>"Waypoint Y"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>pMapWayp</Address>
+                      <Offsets>
+                        <Offset>C</Offset>
+                        <Offset>3C</Offset>
+                      </Offsets>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>944</ID>
+                      <Description>"Waypoint Z (~icon)"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>pMapWayp</Address>
+                      <Offsets>
+                        <Offset>10</Offset>
+                        <Offset>3C</Offset>
+                      </Offsets>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>717</ID>
+                  <Description>"Rome"</Description>
+                  <Options moHideChildren="1" moManualExpandCollapse="1"/>
+                  <LastState Value="" RealAddress="00000000"/>
+                  <GroupHeader>1</GroupHeader>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>716</ID>
+                      <Description>"Assassin Bureau"</Description>
+                      <LastState/>
+                      <VariableType>Auto Assembler Script</VariableType>
+                      <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-07
+  Author : Paul44
+
+  Teleports player to specific map location...
+}
+
+[ENABLE]
+
+// disables script automatically by CE...
+test al,al
+//dd (int)690
+
+// Map waypoint does not have a Z-value, so we use a fixed Z-value...
+[pEntity]+40:
+dd (float)-13.3080864
+[pEntity]+44:
+dd (float)-163.2177124
+[pEntity]+48:
+//dd (float)30.0
+readmem(nDropHeight,4)
+
+
+[DISABLE]
+
+
+</AssemblerScript>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>39</ID>
+                      <Description>"Terme Di Caracalla Tunnel"</Description>
+                      <LastState/>
+                      <VariableType>Auto Assembler Script</VariableType>
+                      <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-07
+  Author : Paul44
+
+  Teleports player to specific mzp location...
+}
+
+[ENABLE]
+
+// disables script automatically by CE...
+test al,al
+//dd (int)39
+
+
+// Map waypoint does not have a Z-value, so we use a fixed Z-value...
+[pEntity]+40:
+dd (float)438.532196
+[pEntity]+44:
+dd (float)76.21903992
+[pEntity]+48:
+//dd (float)30.0
+readmem(nDropHeight,4)
+
+[DISABLE]
+
+
+</AssemblerScript>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>769</ID>
+                      <Description>"'Escape' water trapped..."</Description>
+                      <LastState/>
+                      <VariableType>Auto Assembler Script</VariableType>
+                      <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-07
+  Author : Paul44
+
+  Teleports player to specific mzp location...
+}
+
+[ENABLE]
+
+// disables script automatically by CE...
+test al,al
+//dd (int)39
+
+
+// Map waypoint does not have a Z-value, so we use a fixed Z-value...
+[pEntity]+40:
+dd (float)78.34288788
+[pEntity]+44:
+dd (float)-143.419693
+[pEntity]+48:
+//dd (float)30.0
+readmem(nDropHeight,4)
+
+[DISABLE]
+
+
+</AssemblerScript>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>342</ID>
+                  <Description>"PlayerMapMarker - Base"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>[pMapWayp]+3C</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1479</ID>
+              <Description>"Free Roam... (Enable Godmode FIRST !)"</Description>
+              <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+              <LastState/>
+              <Color>000000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version: 
+  Date   : 2018-04-30
+  Author : Paul44
+
+  Dis/enable Free Cam
+}
+
+
+[ENABLE]
+luacall(ActivateTimer())
+
+bFreeCam:
+db 01
+
+[DISABLE]
+luacall(tmer.destroy())
+
+bFreeCam:
+db 00
+
+bInit:
+db 00
+
+bInit2:
+db 00
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>48</ID>
+                  <Description>"Free Roam Help~Info (see also Readme file)"</Description>
+                  <LastState/>
+                  <Color>008000</Color>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{ Game   : AC4BFSP.exe
+  Version:
+  Date   : 2018-03-23
+  Author : Paul44
+
+  Help instructions on how to use the 'hover' function
+}
+
+[ENABLE]
+{$lua}
+if getOpenedProcessID() ~= 0 then
+    luacall(Help())
+end
+
+{$asm}
+// disable script in CE table
+// apparently, using an ASM opcode that is syntactically correct, but can not be
+// AA-ed by CE causes it to disable the script automatically...
+
+test al,al
+//dd (int)48
+
+[DISABLE]
+
+</AssemblerScript>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1337</ID>
+                  <Description>"Script values"</Description>
+                  <Options moHideChildren="1"/>
+                  <LastState Value="" RealAddress="00000000"/>
+                  <Color>808080</Color>
+                  <GroupHeader>1</GroupHeader>
+                  <CheatEntries>
+                    <CheatEntry>
+                      <ID>1473</ID>
+                      <Description>"Xval"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>Xval</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1474</ID>
+                      <Description>"Yval"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>Yval</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1475</ID>
+                      <Description>"Zval"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>Zval</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1980</ID>
+                      <Description>"OrigCoord X"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>OrigCoord</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1477</ID>
+                      <Description>"OrigCoord Y"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>OrigCoord+4</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1343</ID>
+                      <Description>"OrigCoord Z"</Description>
+                      <Color>808080</Color>
+                      <VariableType>Float</VariableType>
+                      <Address>OrigCoord+8</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1344</ID>
+                      <Description>"XYstepVal"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>XYstepVal</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1345</ID>
+                      <Description>"ZstepVal"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>ZstepVal</Address>
+                    </CheatEntry>
+                    <CheatEntry>
+                      <ID>1346</ID>
+                      <Description>"ZstepdropHeight"</Description>
+                      <VariableType>Float</VariableType>
+                      <Address>ZstepdropHeight</Address>
+                    </CheatEntry>
+                  </CheatEntries>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>1537</ID>
+              <Description>"Cam Distance"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version: 
+  Date   : 2020-05-01
+  Author : Paul44
+
+  Allows one to change Cam Distance to Player (FOV)...
+  (struct = EDI)
+}
+
+[ENABLE]
+
+// AC2FreeRoamingCamera
+aobscanmodule(FreeCam,$process,8B 17 F3 0F 10 46 0C)
+registersymbol(FreeCam)
+alloc(newmem,$100,$process)
+
+globalalloc(pFreeCam,4,$process)
+globalalloc(FOVCam,4,$process)
+
+label(code)
+label(return)
+
+newmem:
+  mov [pFreeCam],edi
+code:
+  mov edx,[edi]
+  movss xmm0,[esi+0C]
+  jmp return
+
+FreeCam:
+  jmp newmem
+  db 90 90
+return:
+
+[DISABLE]
+
+{$lua}
+    local addrFOV = getAddress("[pFreeCam]")
+    writeFloat(addrFOV+0x30,0.81)
+
+{$asm}
+
+FreeCam:
+  db 8B 17 F3 0F 10 46 0C
+
+unregistersymbol(FreeCam)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP.exe"+17125C
+
+"ACBSP.exe"+17123D: 6A 00                 -  push 00
+"ACBSP.exe"+17123F: 8D 45 D0              -  lea eax,[ebp-30]
+"ACBSP.exe"+171242: 50                    -  push eax
+"ACBSP.exe"+171243: E8 E8 24 ED FF        -  call ACBSP.exe+43730
+"ACBSP.exe"+171248: 8D 46 20              -  lea eax,[esi+20]
+"ACBSP.exe"+17124B: 50                    -  push eax
+"ACBSP.exe"+17124C: 8D 4D D0              -  lea ecx,[ebp-30]
+"ACBSP.exe"+17124F: E8 5C E6 EC FF        -  call ACBSP.exe+3F8B0
+"ACBSP.exe"+171254: 0F 28 46 30           -  movaps xmm0,[esi+30]
+"ACBSP.exe"+171258: 0F 29 46 70           -  movaps [esi+70],xmm0
+// ---------- INJECTING HERE ----------
+"ACBSP.exe"+17125C: 8B 17                 -  mov edx,[edi]
+"ACBSP.exe"+17125E: F3 0F 10 46 0C        -  movss xmm0,[esi+0C]
+// ---------- DONE INJECTING  ----------
+"ACBSP.exe"+171263: 8B 42 60              -  mov eax,[edx+60]
+"ACBSP.exe"+171266: 8B CF                 -  mov ecx,edi
+"ACBSP.exe"+171268: F3 0F 11 45 E8        -  movss [ebp-18],xmm0
+"ACBSP.exe"+17126D: FF D0                 -  call eax
+"ACBSP.exe"+17126F: 89 45 EC              -  mov [ebp-14],eax
+"ACBSP.exe"+171272: 85 C0                 -  test eax,eax
+"ACBSP.exe"+171274: 74 4F                 -  je ACBSP.exe+1712C5
+"ACBSP.exe"+171276: 8B 10                 -  mov edx,[eax]
+"ACBSP.exe"+171278: 8B C8                 -  mov ecx,eax
+"ACBSP.exe"+17127A: 8B 42 28              -  mov eax,[edx+28]
+}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>1538</ID>
+                  <Description>"Cam Distance (Default = 0.81)"</Description>
+                  <VariableType>Float</VariableType>
+                  <Address>[pFreeCam]+30</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1539</ID>
+                  <Description>"AC2FreeRoamingCamera - base"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pFreeCam</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>2145</ID>
+              <Description>"PlayerID"</Description>
+              <Color>808080</Color>
+              <VariableType>Byte</VariableType>
+              <Address>[pEntity]+94</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>333</ID>
+              <Description>"Entity - Base"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <Color>C0C0C0</Color>
+              <VariableType>4 Bytes</VariableType>
+              <Address>pEntity</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>103</ID>
+          <Description>"One Hit Kill"</Description>
+          <Options moHideChildren="1" moManualExpandCollapse="1"/>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : ACBSP.exe
+  Version: 
+  Date   : 2018-01-14
+  Author : Paul44
+
+  Kills/knocks out any enemy instantly.
+  (enemies keep showing on HUD after kill until you've moved away some distance)
+}
+
+[ENABLE]
+
+// Uplay: ACBSP.exe+10745EA
+aobscanmodule(EnemyRecord,$process,73 76 FF 83 C4 08 85 C0 74 06 8B 4E 58 89 48 08)
+registersymbol(EnemyRecord)
+alloc(newmem,$50,$process)
+
+// not used - just for debugging reasons...
+globalalloc(pEnemyStruct,4,$process)
+
+label(code)
+label(return)
+label(skipNPC)
+
+newmem:
+code:
+  // I've compared several enemy/NPC struct_tables, but could not find anything
+  // that distinct them from each other. What seems typical is that Max health
+  // for NPC (non-enemy) always seems to be = 6
+  // (just kicking them with [space] would have already kill them...)
+  mov [pEnemyStruct],esi
+  push ebx
+  mov ebx,[esi+5C]
+  cmp ebx,06                                       // skip if Max health = 6
+  jz skipNPC
+  mov [esi+58],1                                   // set enemy health in his record to 1...
+skipNPC:
+  mov ecx,[esi+58]
+  mov [eax+08],ecx
+  pop ebx
+  jmp return
+
+EnemyRecord+0A:
+  jmp newmem
+  nop
+return:
+
+
+[DISABLE]
+
+EnemyRecord+0A:
+  db 8B 4E 58 89 48 08                                                          // 6 bytes
+
+unregistersymbol(EnemyRecord)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP.exe"+10745EA
+
+"ACBSP.exe"+10745D0: 85 C0              -  test eax,eax
+"ACBSP.exe"+10745D2: 7C 32              -  jl ACBSP.exe+1074606
+"ACBSP.exe"+10745D4: 56                 -  push esi
+"ACBSP.exe"+10745D5: 89 46 58           -  mov [esi+58],eax
+"ACBSP.exe"+10745D8: E8 D3 A9 51 FF     -  call ACBSP.exe+58EFB0
+"ACBSP.exe"+10745DD: 50                 -  push eax
+"ACBSP.exe"+10745DE: E8 7D 73 76 FF     -  call ACBSP.exe+7DB960
+"ACBSP.exe"+10745E3: 83 C4 08           -  add esp,08
+"ACBSP.exe"+10745E6: 85 C0              -  test eax,eax
+"ACBSP.exe"+10745E8: 74 06              -  je ACBSP.exe+10745F0
+// ---------- INJECTING HERE ----------
+"ACBSP.exe"+10745EA: 8B 4E 58           -  mov ecx,[esi+58]
+"ACBSP.exe"+10745ED: 89 48 08           -  mov [eax+08],ecx
+// ---------- DONE INJECTING  ----------
+"ACBSP.exe"+10745F0: 83 7E 58 00        -  cmp dword ptr [esi+58],00
+"ACBSP.exe"+10745F4: 7D 10              -  jnl ACBSP.exe+1074606
+"ACBSP.exe"+10745F6: 8B 15 BC BA A0 03  -  mov edx,[ACBSP.exe+264BABC]
+"ACBSP.exe"+10745FC: 6A 00              -  push 00
+"ACBSP.exe"+10745FE: 52                 -  push edx
+"ACBSP.exe"+10745FF: 8B CE              -  mov ecx,esi
+"ACBSP.exe"+1074601: E8 CA E0 6B 00     -  call ACBSP.exe+17326D0
+"ACBSP.exe"+1074606: B8 02 00 00 00     -  mov eax,00000002
+"ACBSP.exe"+107460B: 5E                 -  pop esi
+"ACBSP.exe"+107460C: 5D                 -  pop ebp
+}
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>105</ID>
+              <Description>"(You can not loot any bodies till SSI alert status is neutral/anonymous...)"</Description>
+              <LastState Value="" RealAddress="00000000"/>
+              <Color>FF0000</Color>
+              <GroupHeader>1</GroupHeader>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1380</ID>
+          <Description>"Table 1"</Description>
+          <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+          <LastState/>
+          <Color>000080</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-05-21
+  Author : Paul44
+
+  Select appropriate DRM system: 1 = Uplay ~ 2 = Steam (APAC) ~ 3 = Steam (AMER - EMEA ?)
+}
+
+[ENABLE]
+
+// using some "random code" to get instant memalloc...
+aobscanmodule(DRMselect,$process,8B F0 8B FA 8B 45 08)
+registersymbol(nDRM)
+alloc(nDRM,1,DRMselect)
+
+
+nDRM:
+db 1
+
+[DISABLE]
+
+unregistersymbol(nDRM)
+dealloc(nDRM)
+
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>1381</ID>
+              <Description>"Please select: [Uplay] or [Steam]  (*)"</Description>
+              <DropDownList ReadOnly="1" DescriptionOnly="1" DisplayValueAsItem="1">1:Uplay
+2:Steam
+</DropDownList>
+              <Color>0000FF</Color>
+              <VariableType>Byte</VariableType>
+              <Address>nDRM</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>106</ID>
+              <Description>"(You can check the timer status using [ESC])"</Description>
+              <LastState Value="" RealAddress="00000000"/>
+              <Color>FF0000</Color>
+              <GroupHeader>1</GroupHeader>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>11</ID>
+              <Description>"Freeze Countdown Timer [45 sec.] *"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>000000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-08
+  Author : mgr.inz.Player
+       (slightly changed as original vs seems to add some "bizar" code at 'return' location;
+        but the original cheat does work !)
+       (also seems to work for several timers; but not all of them...)
+
+  Locks the timer at 45 secs - tested with:
+  - 'Romulus lairs': 8 mins
+  - 'Da Vinci' puzzle: 5 mins
+  - 'Courtisan assignment': 2:30 mins
+  - Seq 5 - Mem 3: 3 mins
+  (press [ESC] to see timer status)
+
+  Note: updated to allow user to set different 'stop' timer value.
+}
+
+[ENABLE]
+
+{$lua}
+AOB_SIG1("8D 8E 08 02 00 00 E8 2A","8D 8E 08 02 00 00 E8 CA","RetCheck3")
+AOB_SIG1("6A 01 8B CE E8 05 22 5B FF","6A 01 8B CE E8 A5 22 5B FF","RetCheck4")
+{$asm}
+
+// original codes slightly updated
+// aobscan(RetCheck1,D9 5D FC 80 BF F4 00 00 00 00 74 10)
+// aobscan(RetCheck2,D9 5D FC 0F B6 46 76 D9 45 FC 50 51)
+// aobscan(RetCheck3,8D 8E 08 02 00 00 E8 xx xx xx xx 51 D9 1C 24 E8)
+// aobscan(RetCheck4,6A 01 8b ce E8 xx xx xx xx 51 D9 1C 24 E8)
+// aobscan(CountdownAOB,8B 41 1C 8B 38 8B 70 04 xx xx xx xx xx 08)
+aobscanmodule(RetCheck1,$process,D9 5D FC 80 BF F4 00 00 00 00)                // ACBSP.exe+93ADAF
+aobscanmodule(RetCheck2,$process,D9 5D FC 0F B6 46 76)                         // ACBSP.exe+B6DD89
+// Uplay: aobscanmodule(RetCheck3,$process,8D 8E 08 02 00 00 E8 2A)            // ACBSP.exe+D20B7B
+// Steam: aobscanmodule(RetCheck3,$process,8D 8E 08 02 00 00 E8 CA)            // "ACBSP.exe"+D1CB7B
+// Uplay: aobscanmodule(RetCheck4,$process,6A 01 8B CE E8 05 22 5B FF)         // ACBSP.exe+DA1DA2
+// Steam: aobscanmodule(RetCheck4,$process,6A 01 8B CE E8 A5 22 5B FF)
+aobscanmodule(CountdownAOB,$process,8B 41 0C 8B 51 08 3B)                      // ACBSP.exe+353FCC
+registersymbol(CountdownAOB)
+alloc(newmem,$100,CountdownAOB)
+
+// fill in your own lock time limit...
+globalalloc(intTimer,2)
+intTimer:
+dw (int)45
+
+
+label(exit)
+label(timehack)
+label(code)
+label(return)
+
+newmem:
+code:
+  cmp [ebp+04],RetCheck1
+  je short timehack
+  cmp [ebp+04],RetCheck2
+  je short timehack
+  cmp [ebp+04],RetCheck3+0b
+  je short timehack
+  cmp [ebp+04],RetCheck4+09
+  je short timehack
+  jmp short exit
+timehack:
+  push ebx
+  imul ebx,[intTimer],$7530
+  mov [ecx+08],edi
+  add [ecx+08],ebx       // always 45 seconds left, (45 * 30000 = 1350000 = 00149970(hex) )
+  pop ebx
+exit:
+  mov eax,[ecx+0C]           //original
+  mov edx,[ecx+08]           //original
+  jmp return
+
+CountdownAOB:
+  jmp newmem
+  db 90
+return:
+
+[DISABLE]
+
+CountdownAOB:
+  db 8B 41 0C 8B 51 08
+
+unregistersymbol(CountdownAOB)
+dealloc(newmem)
+
+unregistersymbol(RetCheck3)
+unregistersymbol(RetCheck4)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP.exe"+353FCC
+
+"ACBSP.exe"+353FB6: 56                       -  push esi
+"ACBSP.exe"+353FB7: 8B 71 14                 -  mov esi,[ecx+14]
+"ACBSP.exe"+353FBA: 57                       -  push edi
+"ACBSP.exe"+353FBB: 8B 79 10                 -  mov edi,[ecx+10]
+"ACBSP.exe"+353FBE: 8B C7                    -  mov eax,edi
+"ACBSP.exe"+353FC0: 0B C6                    -  or eax,esi
+"ACBSP.exe"+353FC2: 75 08                    -  jne ACBSP.exe+353FCC
+"ACBSP.exe"+353FC4: 8B 41 1C                 -  mov eax,[ecx+1C]
+"ACBSP.exe"+353FC7: 8B 38                    -  mov edi,[eax]
+"ACBSP.exe"+353FC9: 8B 70 04                 -  mov esi,[eax+04]
+// ---------- INJECTING HERE ----------
+"ACBSP.exe"+353FCC: 8B 41 0C                 -  mov eax,[ecx+0C]
+"ACBSP.exe"+353FCF: 8B 51 08                 -  mov edx,[ecx+08]
+// ---------- DONE INJECTING  ----------
+"ACBSP.exe"+353FD2: 3B C6                    -  cmp eax,esi
+"ACBSP.exe"+353FD4: 77 0C                    -  ja ACBSP.exe+353FE2
+"ACBSP.exe"+353FD6: 72 04                    -  jb ACBSP.exe+353FDC
+"ACBSP.exe"+353FD8: 3B D7                    -  cmp edx,edi
+"ACBSP.exe"+353FDA: 73 06                    -  jae ACBSP.exe+353FE2
+"ACBSP.exe"+353FDC: 33 D2                    -  xor edx,edx
+"ACBSP.exe"+353FDE: 33 C0                    -  xor eax,eax
+"ACBSP.exe"+353FE0: EB 04                    -  jmp ACBSP.exe+353FE6
+"ACBSP.exe"+353FE2: 2B D7                    -  sub edx,edi
+"ACBSP.exe"+353FE4: 1B C6                    -  sbb eax,esi
+}
+
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>178</ID>
+                  <Description>"Locked at XX secs"</Description>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>intTimer</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>10</ID>
+              <Description>"Freeze Stopwatch Timer [7.77]"</Description>
+              <Options moHideChildren="1"/>
+              <LastState/>
+              <Color>000000</Color>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : ACBSP.exe
+  Version:
+  Date   : 2018-01-16
+  Author : mgr.inz.Player
+
+  No idea where this is used?!
+  Tried it out on a few missions/contracts, but did not help there...
+}
+
+[ENABLE]
+alloc(stopwatch,64)
+label(returnhere)
+label(exit)
+aobscan(RetCheck, e8 xx xx xx xx 8d 8b 00 01 00 00 e8 xx xx xx xx 51)   // ACBSP.exe+8EF660
+aobscan(StopwatchAOB, 8B 51 1C 8B 02 8B 52 04 xx xx xx xx xx 89 45 F8)  // ACBSP.exe+1414F4
+
+
+// fill in your own lock time limit...
+globalalloc(intTimer2,2)
+intTimer2:
+dw (int)7
+
+
+
+stopwatch:
+  cmp [ebp+4],RetCheck+10
+  jne short exit
+  mov [ecx],eax
+  push ebx
+  imul ebx,[intTimer2],$7530
+  sub [ecx],ebx   // 7.77 seconds * 30000 = 233100 = 38E8C(hex)
+  pop ebx
+exit:
+  sub eax,[ecx]           //original
+  sbb edx,[ecx+04]        //original
+  jmp returnhere
+
+StopwatchAOB+8:
+jmp stopwatch
+returnhere:
+
+[DISABLE]
+aobscan(StopwatchAOB, 8B 51 1C 8B 02 8B 52 04 xx xx xx xx xx 89 45 F8)
+StopwatchAOB+8:
+sub eax,[ecx]
+sbb edx,[ecx+04]
+//Alt: db 2B 01 1B 51 04
+{mgr.inz.Player aka YourEnemy}
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>179</ID>
+                  <Description>"Locked at XX secs"</Description>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>intTimer2</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>151</ID>
+              <Description>"(Based on table entries posted @ Fearless Revolution...)"</Description>
+              <LastState Value="" RealAddress="00000000"/>
+              <Color>FF0000</Color>
+              <GroupHeader>1</GroupHeader>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>2170</ID>
+          <Description>"Tools..."</Description>
+          <Options moHideChildren="1"/>
+          <LastState/>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{ Game   : AC4BFSP.exe
+  Version: 
+  Date   : 2020-03-30
+  Author : Paul44
+
+  Some tools, such as collecting Map Icons...
+
+}
+
+[ENABLE]
+{$lua}
+
+  getStaticAddr("15 57 01 8B 0D * * * * 8B 09 8B 11 83 C4 0C",23,"pCheckTools")
+
+  -- struct: Channel: +8 .. 4*i: +0.. +40: VFT+90 = TransfertIncomeToTheBankClip
+  local addrCheckIcons = getAddress("pCheckIcons")
+  local addrCheckViewP = getAddress("pCheckViewP")
+  local addrChannel = readPointer(getAddress("pCheckTools"))
+  -- get ViewPoint VFT... WorldUpgradeMapMarker...
+  -- get Treasure VFT... TreasureMapMarker...
+
+  local addrIcon = readPointer(addrChannel+0x8)
+  --print(string.format('* %X *',addrIcon))
+  -- assuming will 'hit' within 1st XXX in list...
+  local nLoopEnd = 1000
+  local bTreasure = false
+  local bViewp = false
+  for i=0,nLoopEnd do
+     local addrTreasure = readPointer(addrIcon+4*i)
+     --print(string.format('* %X + [%X] *',addrTreasure,i*4))
+     local sCheckTreasure = readString(readPointer(readPointer(addrTreasure)+0x40)+0x90,28)
+     local sCheckViewPoint = readString(readPointer(readPointer(addrTreasure)+0x40)+0x78,15)
+     local addrMapIcon = readPointer(addrTreasure)+0x40
+     --print(string.format('[%d] - %X {%X} - [%s] ~ %s',i+1,addrMapIcon,readPointer(addrTreasure),sCheckTreasure,sCheckViewPoint))
+     if (sCheckTreasure == "TransfertIncomeToTheBankClip" and bTreasure == false) then
+        writeInteger(addrCheckIcons,readPointer(addrMapIcon))
+        bTreasure = true
+     end
+     if (sCheckViewPoint == "MapLayerManager" and bViewp == false) then
+        writeInteger(addrCheckViewP,readPointer(addrMapIcon))
+        bViewp = true
+     end
+     if (bTreasure == true and bViewp == true) then break end
+  end
+
+{$asm}
+globalalloc(nChoice,1,$process)
+
+nChoice:
+db 0
+
+[DISABLE]
+
+nChoice:
+db 0
+
+
+{
+// ORIGINAL CODE - INJECTION POINT: "ACBSP_Win.exe"+18290D
+
+"ACBSP_Win.exe"+1828EE: CC                    -  int 3
+"ACBSP_Win.exe"+1828EF: CC                    -  int 3
+"ACBSP_Win.exe"+1828F0: 55                    -  push ebp
+"ACBSP_Win.exe"+1828F1: 8B EC                 -  mov ebp,esp
+"ACBSP_Win.exe"+1828F3: 64 A1 00 00 00 00     -  mov eax,fs:[00000000]
+"ACBSP_Win.exe"+1828F9: 6A FF                 -  push -01
+"ACBSP_Win.exe"+1828FB: 68 E1 89 31 02        -  push ACBSP_Win.exe+1E889E1
+"ACBSP_Win.exe"+182900: 50                    -  push eax
+"ACBSP_Win.exe"+182901: 64 89 25 00 00 00 00  -  mov fs:[00000000],esp
+"ACBSP_Win.exe"+182908: A1 C8 26 AB 02        -  mov eax,[ACBSP_Win.exe+26226C8]
+// ---------- INJECTING HERE ----------
+"ACBSP_Win.exe"+18290D: 83 EC 08              -  sub esp,08
+"ACBSP_Win.exe"+182910: 85 C0                 -  test eax,eax
+// ---------- DONE INJECTING  ----------
+"ACBSP_Win.exe"+182912: 75 6E                 -  jne ACBSP_Win.exe+182982
+"ACBSP_Win.exe"+182914: A1 A8 22 AF 02        -  mov eax,[ACBSP_Win.exe+26622A8]
+"ACBSP_Win.exe"+182919: 50                    -  push eax
+"ACBSP_Win.exe"+18291A: 6A 04                 -  push 04
+"ACBSP_Win.exe"+18291C: 6A 1C                 -  push 1C
+"ACBSP_Win.exe"+18291E: E8 AD 15 57 01        -  call ACBSP_Win.exe+16F3ED0
+"ACBSP_Win.exe"+182923: 8B 0D F4 E0 AE 02     -  mov ecx,[ACBSP_Win.exe+265E0F4]
+"ACBSP_Win.exe"+182929: 8B 09                 -  mov ecx,[ecx]
+"ACBSP_Win.exe"+18292B: 8B 11                 -  mov edx,[ecx]
+"ACBSP_Win.exe"+18292D: 83 C4 0C              -  add esp,0C
+}
+</AssemblerScript>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>2166</ID>
+              <Description>"Build Icon Lists..."</Description>
+              <LastState/>
+              <VariableType>Auto Assembler Script</VariableType>
+              <AssemblerScript>{ Game   : AC4BFSP_CN_Win.exe
+  Version: 
+  Date   : 2020-06-19
+  Author : Paul44
+
+  Channel ~&gt; gets TreasureIcon VFT...
+}
+
+[ENABLE]
+{$lua}
+local nChoice = readBytes(getAddress("nChoice"),1)
+if (nChoice == 1 or nChoice == 10 or nChoice == 20 or nChoice == 30) then
+
+  GetLuaEngine().MenuItem5.doClick()
+  -- need for loop to get info print-ed...
+  print('\n One moment, please... processing...')
+  for i=0,2 do print('\n') end
+
+  local scan = createMemScan(false)
+
+  local sMsg = ' still to collect...'
+  local sIcon = "Collectibles"
+  local sAOB = string.format('%X',readPointer(getAddress("pCheckIcons")))
+  -- icon got collected...
+  local nCollect = 0x00
+  if (nChoice == 30) then
+     sIcon = "MapIcons"
+     sMsg = ""
+     sAOB = string.format('%X',readPointer(getAddress("pCheckViewP")))
+     --nCollect = 0x99
+  end
+  if (nChoice == 10) then nCollect = 0x99 ; sMsg = "" end
+  if (nChoice == 20) then sMsg = " shown on map..." end
+
+  --scan.setOnlyOneResult(false)
+  scan.firstScan(soExactValue,vtDword,rtRounded,sAOB,nil,0,0xffffffffffffffff,"-X-C+W",
+                                      fsmNotAligned,nil,true,false,false,false)
+  scan.waitTillDone()
+  --scan.getOnlyResult()
+  --print(string.format('- %X -',scan.Result))
+  local scanList = createFoundList(scan)
+  scanList.initialize()
+
+  for i=0,1 do GetLuaEngine().MenuItem5.doClick() end
+
+  print('List of ',sIcon,sMsg)
+  print(string.format('[Total: %d] - VFT: {%X} -',scanList.Count,readPointer(scanList.Address[0])))
+
+  local nCount = 0
+  for i=0,scanList.Count-1 do
+      local bPrint = false
+      local addrIcon = tonumber(scanList.Address[i],16)
+      --print(string.format('- %X -',addrIcon))
+
+      local xVal = readFloat(addrIcon+0x8)
+      local yVal = readFloat(addrIcon+0xC)
+      local zVal = readFloat(addrIcon+0x10)
+
+      local iconCat1,iconCat2,iconCollect,iconShown
+
+      if (nChoice == 30) then
+          iconCat1 = readInteger(addrIcon+0x5C)
+          iconCat2 = 0
+          iconCollect = 0
+          iconShown = 0
+      else
+          local addrInfo = readPointer(readPointer(addrIcon+0x7C))
+          iconCat1 = readInteger(addrInfo+0x10)
+          iconCat2 = readInteger(addrInfo+0x14)
+          iconCollect = readBytes(addrIcon+0x91,1)
+          iconShown = readBytes(addrIcon+0x90,1)
+          if (iconCat1 == nil) then iconCat1 = 0 end
+          if (iconCat2 == nil) then iconCat2 = 0 end
+     end
+
+      if ((nChoice == 1 or nChoice == 10) and iconCollect ~= nCollect) then bPrint = true end
+      if (nChoice == 20 and iconShown == 0x00 and iconCollect == 0x01) then writeBytes(addrIcon+0x90,0x01) ; bPrint = true end
+      if (nChoice == 30) then bPrint = true end
+
+      -- only print non-collected icons...
+      if (bPrint) then
+          nCount = nCount + 1
+          print(string.format('[%03d]: {%08X} ~ [%d/%d]  |  %f  -  %f  -  %f  |  %02X%02X ',nCount,addrIcon,iconCat1,iconCat2,xVal,yVal,zVal,iconCollect,iconShown))
+      end
+  end
+  print('\n =&gt; Just close window when no longer needed...')
+
+  scanList.destroy()
+  scan.destroy()
+end
+
+{$asm}
+
+test al,al
+//dd (int)48
+
+[DISABLE]
+
+</AssemblerScript>
+              <CheatEntries>
+                <CheatEntry>
+                  <ID>2206</ID>
+                  <Description>"(Collectibles = 1-10 ~ Show on map = 20  |  MapIcons = 30)"</Description>
+                  <LastState Value="" RealAddress="00000000"/>
+                  <Color>FF00FF</Color>
+                  <GroupHeader>1</GroupHeader>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>2171</ID>
+                  <Description>"Select your list..."</Description>
+                  <VariableType>Byte</VariableType>
+                  <Address>nChoice</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>2207</ID>
+                  <Description>"(CheckIcons)"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pCheckIcons</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>2205</ID>
+                  <Description>"(CheckViewP)"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pCheckViewP</Address>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>2201</ID>
+                  <Description>"(CheckTools)"</Description>
+                  <ShowAsHex>1</ShowAsHex>
+                  <Color>C0C0C0</Color>
+                  <VariableType>4 Bytes</VariableType>
+                  <Address>pCheckTools</Address>
+                </CheatEntry>
+              </CheatEntries>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>1419</ID>
+      <Description>"Error Statistics"</Description>
+      <Options moHideChildren="1"/>
+      <LastState Value="" RealAddress="00000000"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>1420</ID>
+          <Description>"&gt; Main script (ptrs)"</Description>
+          <VariableType>4 Bytes</VariableType>
+          <Address>nCrash1</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>1421</ID>
+          <Description>"&gt; Teleport..."</Description>
+          <VariableType>4 Bytes</VariableType>
+          <Address>nCrash2</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>2016</ID>
+          <Description>"&gt; Map Waypoint Teleport"</Description>
+          <VariableType>4 Bytes</VariableType>
+          <Address>nCrash3</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols/>
+  <LuaScript>-- You must accept to execute
+-- the script !
+-- If not, the CE table
+-- will return errors...
+
+
+-- will auto-attach the game; even when table is loaded first...
+-- place this at start/common part of lua script
+-- will run ONLY once when CE table is loaded
+-- when changing process, you must reload table or function !
+local myGame = "ACBSP.exe"
+local aalist=getAutoAttachList()
+stringlist_add(aalist,myGame)
+
+
+-- dis/enable the "hover" functionality via 'Player Coordinates (writes~updates)' script...
+-- is called by the ActivateTimer() function
+function Hover(tmer)
+    -- get XY and Z-axis step value... (default = 100.0 ~ 50.0)
+    local addrXYstep = getAddress("XYstepVal")
+    local XYstep = readFloat(addrXYstep)
+    local addrZstep = getAddress("ZstepVal")
+    local Zstep = readFloat(addrZstep)
+
+    -- get x,y,z coordinates...
+    local addrX = getAddress("Xval")
+    local XValue = readFloat(addrX)
+    local addrY = getAddress("Yval")
+    local YValue = readFloat(addrY)
+    local addrZ = getAddress("Zval")
+    local ZValue = readFloat(addrZ)
+
+    -- using NUMpad keys to navigate horizontally...
+    -- these keys also allow us to pass through "walls"... (noclip)
+    if isKeyPressed(VK_NUMPAD8) then
+        --print(string.format("%x",addrX))
+        --print(XYstep)
+        --print(XValue)
+        XValue = XValue + XYstep
+        writeFloat(addrX,XValue)
+    end
+    if (isKeyPressed(VK_NUMPAD2)) then
+        XValue = XValue - XYstep
+        writeFloat(addrX,XValue)
+    end
+    if (isKeyPressed(VK_NUMPAD4)) then
+        YValue = YValue + XYstep
+        writeFloat(addrY,YValue)
+    end
+    if (isKeyPressed(VK_NUMPAD6)) then
+        YValue = YValue - XYstep
+        writeFloat(addrY,YValue)
+    end
+    if (isKeyPressed(VK_NUMPAD7)) then
+        --print(string.format("%x",addrZ))
+        ZValue = ZValue + Zstep
+        writeFloat(addrZ,ZValue)
+    end
+    if (isKeyPressed(VK_NUMPAD9)) then
+        ZValue = ZValue - Zstep
+        writeFloat(addrZ,ZValue)
+    end
+    -- End "hovering around" activity...
+    if (isKeyPressed(VK_F10)) then
+        --print(string.format("%x",addrZ))
+        -- stay/drop at current location coordinates...
+        DisableEntry()
+        tmer.destroy()
+    end
+    if (isKeyPressed(VK_F12)) then
+        -- restore start location coordinates...
+        -- does not seem to work all too well?!
+        RestoreOrigCoord(addrX,addrY,addrZ)
+        -- allow game some time to execute before quiting script
+        -- allows to return through walls... in most cases
+        sleep(500)
+        DisableEntry()
+        tmer.destroy()
+    end
+end
+
+-- restore start location coordinates [F12]...
+function RestoreOrigCoord(addrX,addrY,addrZ)
+    local Zplus = readFloat(getAddress("ZstepdropHeight"))
+    local addrOrig = getAddress("OrigCoord")
+    local structOffset = readInteger(getAddress("pStructCrdOffset"))
+    local addrCoord = readPointer(getAddress("pStructCrdBase")) + structOffset
+        --print(string.format("%x",addrOrig))
+        --print(string.format("%x",addrCoord))
+        --print(structOffset)
+    local Zvalue = readFloat(addrOrig+0x8)+Zplus
+    -- update [pStructCrdBase]+xx values...
+    writeFloat(addrCoord,readFloat(addrOrig))
+    writeFloat(addrCoord+0x4,readFloat(addrOrig+0x4))
+    writeFloat(addrCoord+0x8,Zvalue)
+    -- update Xval,Yval,Zval values...
+    writeFloat(addrX,readFloat(addrOrig))
+    writeFloat(addrY,readFloat(addrOrig+0x4))
+    writeFloat(addrZ,Zvalue)
+end
+
+function ActivateTimer()
+    tmer = createTimer(nil, false)
+    tmer.OnTimer = Hover
+    tmer.Interval = 100
+    tmer.Enabled = true
+end
+
+function Help()
+    showMessage("Use following function keys:\n\z
+       F10 = End at current location\nF12 = End &amp; Restore original location\n\n\z
+       Use NumPad keys [2-8] &amp; [4-6] to pass through walls (no clip)\n\z
+       Use NumPad keys [7-9] to ascend &amp; descend respectively\n\z
+       (normal move keys can not be used)\n\n\z
+       FreeRoam preferably not used while 'hidden'...")
+end
+
+function DisableEntry()
+    local addrID = getAddress("AddrListID")
+    local ListID = readInteger(addrID)
+    local ScriptID = getAddressList().getMemoryRecordByID(ListID)
+    ScriptID.Active = false
+end
+
+function GetMD5(nShowMsg)
+    if process ~= nil then
+        local intVal = 0
+        -- calculate MD5 of PE header...
+        local FileMD5 = md5memory(process,4096)
+        local strMsg1,strMsg2
+        strMsg1 = "You have attached [" .. process .. "]..."
+        strMsg2 = "with following MD5 PE Header value: {" .. FileMD5 .. "}"
+        if nShowMsg == 1 then
+            showMessage(strMsg1 .. "\n\z" .. strMsg2)
+        end
+        --print('[',process,']')
+        --print(FileMD5)
+        --print(intVal)
+        return intVal
+    end
+end
+
+
+-- see 'Player Status'
+-- see also [cheatengine.org/forum/viewtopic.php?p=5424693&amp;sid=ce6ad1bc7c3257934d12f40641179e2f]
+function AOB_SIG1(AOB1,AOB2,AOB3)
+    -- 1 = Uplay ~ 2 = Steam_APAC ~ 3 = Steam
+    local addrDRM = getAddress("nDRM")
+    local DRMid = readBytes(addrDRM,1)
+    -- print('['..DRMid..']')
+    local strAOB = ""
+    if DRMid == 1 or DRMid == 3 or DRMid == nil then
+        strAOB = AOB1
+    elseif DRMid == 2 then
+        strAOB = AOB2
+    end
+
+    autoAssemble([[
+    label(]]..AOB3..[[)
+    registersymbol(]]..AOB3..[[)
+    aobscanmodule(]]..AOB3..[[,$process,]]..strAOB..[[)
+    ]]..AOB3..[[:
+
+    ]])
+
+    -- example:
+    -- label(ShipCoordCheck)
+    -- registersymbol(ShipCoordCheck)
+    -- aobscanmodule(ShipCoordCheck,$process,]]..strAOB..[[)
+    -- ShipCoordCheck:
+end
+
+
+
+function getStaticAddr(sAOB,nOffset,sBaseAddr)
+  --local scan1 = AOBScan(sAOB,"+X-C-W")
+  --print("* " .. scan1[0])
+  local scan = createMemScan(false)
+  scan.setOnlyOneResult(true)
+  scan.firstScan(soExactValue,vtByteArray,rtRounded,sAOB,nil,0,0xffffffffffffffff,"+X-C-W",
+                                      fsmNotAligned,nil,true,false,false,false)
+  scan.waitTillDone()
+  scan.getOnlyResult()
+  --print(string.format('- %X -',scan.Result))
+  local offsVal = scan.Result - nOffset
+  --print(string.format('- %X -',offsVal))
+  offsVal = string.format('%X',readInteger(offsVal))
+  --print(offsVal)
+  scan.destroy()
+
+  local addrFound = getAddress(sBaseAddr)
+  writeInteger(addrFound,readPointer(offsVal))
+  --print(string.format('* %X *',addrStruct))
+  scan.destroy()
+end
+
+
+</LuaScript>
+</CheatTable>
